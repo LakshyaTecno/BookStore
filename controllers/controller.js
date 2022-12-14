@@ -1,7 +1,17 @@
 const Book = require("../models/bookSchema");
 const Magazine = require("../models/magazinesSchema");
-const { parse } = require("json2csv");
-
+const fs = require("fs");
+const JSONToCSV = (objArray, keys) => {
+  let csv = keys.join(",");
+  objArray.forEach((row) => {
+    let values = [];
+    keys.forEach((key) => {
+      values.push(row[key] || "");
+    });
+    csv += "\n" + values.join(",");
+  });
+  return csv;
+};
 exports.createNewBook = async (req, res) => {
   try {
     const data = {
@@ -11,8 +21,9 @@ exports.createNewBook = async (req, res) => {
       description: req.body.description,
     };
     const book = await Book.create(data);
-    const csvBook = parse([book]);
-    console.log(csvBook);
+    const csv = JSONToCSV([book], ["title", "isbn", "authors", "description"]);
+    fs.appendFileSync("./csv/myBooks.csv", csv);
+
     console.log(`#### New Book '${book.title}' created ####`);
     res.status(201).send(book);
   } catch (err) {
@@ -32,8 +43,14 @@ exports.createNewMagazine = async (req, res) => {
       publishedAt: req.body.publishedAt,
     };
     const magazine = await Magazine.create(data);
-    const csvMagazine = parse([magazine]);
-    console.log(csvMagazine);
+    console.log(magazine);
+
+    const csv = JSONToCSV(
+      [magazine],
+      ["title", "isbn", "authors", "publishedAt"]
+    );
+
+    fs.appendFileSync("./csv/myMagazines.csv", csv);
     console.log(`#### New Book '${magazine.title}' created ####`);
     res.status(201).send(magazine);
   } catch (err) {

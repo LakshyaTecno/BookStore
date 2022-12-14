@@ -49,7 +49,7 @@ db.on("error", () => {
 
 db.once("open", () => {
   console.log("connected to mongodb");
-  //convertCSVtoJson();
+
   init();
 });
 
@@ -58,7 +58,7 @@ async function init() {
     var authors = await csvtoJson(authorsPath);
     var books = await csvtoJson(booksPath);
     var magazines = await csvtoJson(magazinePath);
-    console.log(magazines);
+
     await Book.collection.drop();
 
     await Magazine.collection.drop();
@@ -70,7 +70,7 @@ async function init() {
     const curauthors = await Author.insertMany(authors);
 
     const curmagazine = await Magazine.insertMany(magazines);
-    console.log(curbooks, curauthors, curmagazine);
+    // console.log(curbooks, curauthors, curmagazine);
   } catch (err) {
     console.log("err in db initialization", err.message);
   }
